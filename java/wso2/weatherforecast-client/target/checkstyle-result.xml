@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.45.1">
+<file name="C:\My Projects\GitHub\OAuth\java\wso2\weatherforecast-client\src\main\java\com\example\App.java">
+<error line="7" column="1" severity="error" message="Extra separation in import group before &apos;com.nimbusds.oauth2.sdk.*&apos;" source="com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck"/>
+<error line="7" column="1" severity="error" message="Wrong order for &apos;com.nimbusds.oauth2.sdk.*&apos; import." source="com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck"/>
+<error line="7" column="31" severity="error" message="Using the &apos;.*&apos; form of import should be avoided - com.nimbusds.oauth2.sdk.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
+<error line="8" column="36" severity="error" message="Using the &apos;.*&apos; form of import should be avoided - com.nimbusds.oauth2.sdk.auth.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
+<error line="9" column="34" severity="error" message="Using the &apos;.*&apos; form of import should be avoided - com.nimbusds.oauth2.sdk.id.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
+<error line="10" column="37" severity="error" message="Using the &apos;.*&apos; form of import should be avoided - com.nimbusds.oauth2.sdk.token.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
+<error line="48" column="13" severity="error" message="&apos;!&apos; is followed by whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.NoWhitespaceAfterCheck"/>
+<error line="57" severity="error" message="Line has trailing spaces." source="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineCheck"/>
+</file>
+<file name="C:\My Projects\GitHub\OAuth\java\wso2\weatherforecast-client\src\test\java\com\example\AppTest.java">
+</file>
+</checkstyle>

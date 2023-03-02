@@ -1,0 +1,15 @@
+#
+# Persistent Volume Claim
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mssql-data-claim
+  namespace: mssql
+spec:
+  storageClassName: hostpath
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

@@ -1,0 +1,11 @@
+{
+    "wso2": {
+        "tokenUri": "https://is.parel25.nl:9443/oauth2/token",
+        "clientId": "KXa2TwKGQNp92ffy57SbvaXJen4a",
+        "clientSecret": "KW5omMPDBjP2YDJCxC2Da0kHwgka",
+        "scopes": [
+            "weatherapp"
+        ],
+        "authorizationGrantType": "client_credentials"
+    }
+}

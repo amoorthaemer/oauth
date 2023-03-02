@@ -1,0 +1,12 @@
+server:
+    port: 8081
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://is.parel25.nl:9443/oauth2/token
+          jwk-set-uri: https://is.parel25.nl:9443/oauth2/jwks
+# logging:
+#   level:
+#     org.springframework: DEBUG

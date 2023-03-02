@@ -1,0 +1,25 @@
+version: "3.7"
+name: wso2
+services:
+  wso2is_svc:
+    hostname: is
+    domainname: parel25.nl
+    image: ${WSO2_SERVER_NAME}:${WSO2_SERVER_VERSION}
+    ports:
+      - ${HTTPS_PORT}:${HTTPS_PORT}
+      - ${CLUSTER_PORT}:${CLUSTER_PORT}
+    expose:
+      - ${HTTPS_PORT}
+    volumes:
+      - type: bind
+        source: "${PWD}/repository/conf/deployment.toml"
+        target: "${WSO2_SERVER_HOME}/repository/conf/deployment.toml"
+        read_only: true
+      - type: bind
+        source: "${PWD}/repository/resources/security/wso2carbon.jks"
+        target: "${WSO2_SERVER_HOME}/repository/resources/security/wso2carbon.jks"
+        read_only: true
+      - type: bind
+        source: "${PWD}/repository/resources/security/client-truststore.jks"
+        target: "${WSO2_SERVER_HOME}/repository/resources/security/client-truststore.jks"
+        read_only: true

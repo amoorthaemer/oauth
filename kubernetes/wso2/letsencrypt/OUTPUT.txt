@@ -1,0 +1,38 @@
+{
+  "canDelegate": null,
+  "condition": null,
+  "conditionVersion": null,
+  "description": null,
+  "id": "/subscriptions/1aaadc54-ba26-4acc-9ac6-ac1e43a1664c/resourceGroups/parel25-rg/providers/Microsoft.Network/dnszones/parel25.nl/providers/Microsoft.Authorization/roleAssignments/c2b8bf88-67bd-4956-b7e9-32112551e528",
+  "name": "c2b8bf88-67bd-4956-b7e9-32112551e528",
+  "principalId": "46d46e22-5efe-459e-bd9d-c9d4fe8aee8e",
+  "principalType": "ServicePrincipal",
+  "resourceGroup": "parel25-rg",
+  "roleDefinitionId": "/subscriptions/1aaadc54-ba26-4acc-9ac6-ac1e43a1664c/providers/Microsoft.Authorization/roleDefinitions/befefa01-2a29-4197-83a8-272ff33ce314",
+  "scope": "/subscriptions/1aaadc54-ba26-4acc-9ac6-ac1e43a1664c/resourceGroups/parel25-rg/providers/Microsoft.Network/dnszones/parel25.nl",
+  "type": "Microsoft.Authorization/roleAssignments"
+}
+[
+  {
+    "canDelegate": null,
+    "condition": null,
+    "conditionVersion": null,
+    "description": null,
+    "id": "/subscriptions/1aaadc54-ba26-4acc-9ac6-ac1e43a1664c/resourceGroups/parel25-rg/providers/Microsoft.Network/dnszones/parel25.nl/providers/Microsoft.Authorization/roleAssignments/c2b8bf88-67bd-4956-b7e9-32112551e528",
+    "name": "c2b8bf88-67bd-4956-b7e9-32112551e528",
+    "principalId": "46d46e22-5efe-459e-bd9d-c9d4fe8aee8e",
+    "principalName": "2d2001a5-000e-41c9-b730-e6296acdfb85",
+    "principalType": "ServicePrincipal",
+    "resourceGroup": "parel25-rg",
+    "roleDefinitionId": "/subscriptions/1aaadc54-ba26-4acc-9ac6-ac1e43a1664c/providers/Microsoft.Authorization/roleDefinitions/befefa01-2a29-4197-83a8-272ff33ce314",
+    "roleDefinitionName": "DNS Zone Contributor",
+    "scope": "/subscriptions/1aaadc54-ba26-4acc-9ac6-ac1e43a1664c/resourceGroups/parel25-rg/providers/Microsoft.Network/dnszones/parel25.nl",
+    "type": "Microsoft.Authorization/roleAssignments"
+  }
+]
+AZURE_CERT_MANAGER_SP_APP_ID: 2d2001a5-000e-41c9-b730-e6296acdfb85
+AZURE_CERT_MANAGER_SP_PASSWORD: r1T8Q~Kuy4rfbypybBe-YM_0p5zpgH66dJBX0aBM
+AZURE_SUBSCRIPTION_ID: 1aaadc54-ba26-4acc-9ac6-ac1e43a1664c
+AZURE_TENANT_ID: a4a8edd7-6215-46f9-a1b0-e267e20c88c6
+AZURE_DNS_ZONE: parel25.nl
+AZURE_DNS_ZONE_RESOURCE_GROUP: parel25-rg

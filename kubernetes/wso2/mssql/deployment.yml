@@ -1,0 +1,132 @@
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  name: mssql
+#---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mssql-secret
+  namespace: mssql
+type: Opaque
+data:
+  MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGEK
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mssql-account
+  namespace : mssql
+  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mssql-deployment
+  namespace: mssql
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mssql
+  template:
+    metadata:
+      labels:
+        app: mssql
+    spec:
+      terminationGracePeriodSeconds: 30
+      hostname: sqlserver
+      securityContext:
+        fsGroup: 10001
+      containers:
+      - name: mssql
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - nc -z localhost 1433
+          initialDelaySeconds: 250
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - -c
+              - nc -z localhost 1433
+          initialDelaySeconds: 250
+          periodSeconds: 10
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "1.5G"
+            cpu: "500m"
+          limits:
+            memory: "1.5G"
+            cpu: "500m"
+        volumeMounts:
+          - name: mssqldb-data
+            mountPath: "/var/opt/mssql/data"
+          - name: mssqldb-log
+            mountPath: "/var/opt/mssql/log"
+          - name: mssqldb-backup
+            mountPath: "/var/opt/mssql/backup"
+        ports:
+        - containerPort: 1433
+          protocol: TCP
+        env:
+        - name: MSSQL_PID
+          value: "Developer"
+        - name: MSSQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mssql-secret
+              key: MSSQL_SA_PASSWORD
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: LANG
+          value: "en_US.UTF-8"
+        - name: LANGUAGE
+          value: "en_US:en"
+        - name: LC_ALL
+          value: "en_US.UTF-8"
+        - name: TZ
+          value: "Europe/Amsterdam"
+        - name: "CONFIG_EDGE_BUILD"
+          value: "0"
+      volumes:
+        - name: mssqldb-data
+          hostPath:
+            path: "/run/desktop/mnt/host/c/My Databases/MSSQL/data"
+            type: DirectoryOrCreate
+        - name: mssqldb-log
+          hostPath:
+            path: "/run/desktop/mnt/host/c/My Databases/MSSQL/log"
+            type: DirectoryOrCreate
+        - name: mssqldb-backup
+          hostPath:
+            path: "/run/desktop/mnt/host/c/My Databases/MSSQL/backup"
+            type: DirectoryOrCreate
+      serviceAccountName: "mssql-account"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-service
+  namespace: mssql
+spec:
+  selector:
+    app: mssql
+  ports:
+  - protocol: TCP
+    port: 1433
+    targetPort: 1433
+  type: ClusterIP

@@ -1,0 +1,233 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: wso2is
+
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: wso2is-cert
+#   namespace: wso2is
+# spec:
+#   secretName: wso2is-cert
+#   issuerRef:
+#     name: letsencrypt
+#     kind: ClusterIssuer
+#     group: cert-manager.io
+#   commonName: "*.parel25.nl"
+#   dnsNames:
+#     - "parel25.nl"
+#     - "*.parel25.nl"
+
+# ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wso2is-secret
+  namespace: wso2is
+type: Opaque
+data:
+  MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGEK
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wso2is-deployment-conf
+  namespace : wso2is
+data:
+  deployment.toml: |-
+    [server]
+    hostname = "$env{HOST_NAME}"
+    node_ip = "$env{NODE_IP}"
+    #internal_hostname = "$env{HOST_NAME}"
+    base_path = "https://$ref{server.hostname}"
+
+    [transport.https.properties]
+    proxyPort="443"
+
+    [super_admin]
+    username = "admin"
+    password = "admin"
+    create_admin_account = true
+
+    [user_store]
+    type = "database_unique_id"
+
+    [database.identity_db]
+    type = "mssql"
+    url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_IDENTITY_DB;SendStringParametersAsUnicode=false;encrypt=false;trustServerCertificate=true;packetSize=16000;"
+    username = "sa"
+    password = "Yry4k3x!3648ah24a"
+    #password = "$env{MSSQL_SA_PASSWORD}"
+
+    [database.shared_db]
+    type = "mssql"
+    url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_SHARED_DB;SendStringParametersAsUnicode=false;encrypt=false;trustServerCertificate=true;packetSize=16000;"
+    username = "sa"
+    password = "Yry4k3x!3648ah24a"
+    #password = "$env{MSSQL_SA_PASSWORD}"
+
+    [keystore.primary]
+    file_name = "wso2carbon.jks"
+    password = "wso2carbon"
+    type="JKS"
+
+    [truststore]
+    file_name="client-truststore.jks"
+    password="wso2carbon"
+    type="JKS"
+
+    [account_recovery.endpoint.auth]
+    hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
+
+    [identity.auth_framework.endpoint]
+    app_password= "dashboard"
+
+    [[oauth.custom_grant_type]]
+    name="urn:ietf:params:oauth:grant-type:token-exchange"
+    grant_handler="org.wso2.carbon.identity.oauth2.grant.token.exchange.TokenExchangeGrantHandler"
+    grant_validator="org.wso2.carbon.identity.oauth2.grant.token.exchange.TokenExchangeGrantValidator"
+    [oauth.custom_grant_type.properties]
+    IdTokenAllowed=true
+    IATValidityPeriod="1h"
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wso2is-account
+  namespace : wso2is
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wso2is-deployment
+  namespace: wso2is
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: wso2is
+  template:
+    metadata:
+      labels:
+        app: wso2is
+    spec:
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - "wso2is"
+            - "is.parel25.nl"
+      initContainers:
+        - name: init-db
+          image: busybox:latest
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MSSQL Server deployment"; while ! nc -z mssql-service.mssql.svc.cluster.local 1433; do sleep 1; printf "-"; done; echo -e "  >> MSSQL Server has started";']
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 802
+      containers:
+      - name: wso2is
+        image: wso2is:6.1.0
+        imagePullPolicy: Never
+        resources:
+          requests:
+            memory: "1.25G"
+            cpu: "500m"
+          limits:
+            memory: "1.25G"
+            cpu: "500m"
+        lifecycle:
+          preStop:
+            exec:
+              command:  ['sh', '-c', '${WSO2_SERVER_HOME}/bin/wso2server.sh stop']
+        volumeMounts:
+        - name: wso2is-deployment-conf
+          mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml
+          subPath: deployment.toml
+        ports:
+        - containerPort: 9763
+          protocol: TCP
+        - containerPort: 9443
+          protocol: TCP
+        env:
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_NAME
+          value: "is.parel25.nl"
+        - name: MSSQL_SERVER
+          value: "mssql-service.mssql.svc.cluster.local"
+        - name: MSSQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wso2is-secret
+              key: MSSQL_SA_PASSWORD
+        - name: LANG
+          value: "en_US.UTF-8"
+        - name: LANGUAGE
+          value: "en_US:en"
+        - name: LC_ALL
+          value: "en_US.UTF-8"
+        - name: TZ
+          value: "Europe/Amsterdam"
+      volumes:
+      - name: wso2is-deployment-conf
+        configMap:
+          name: wso2is-deployment-conf
+      serviceAccountName: "wso2is-account"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wso2is-service
+  namespace: wso2is
+spec:
+  selector:
+    app: wso2is
+  ports:
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+  - name: http
+    protocol: TCP
+    port: 9763
+    targetPort: 9763
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wso2is-ingress
+  namespace: wso2is
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+    - hosts:
+        - "*.parel25.nl"
+      secretName: wso2is-cert
+  rules:
+    - host: is.parel25.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wso2is-service
+                port:
+                  number: 9443
+  ingressClassName: nginx 
+ 
+

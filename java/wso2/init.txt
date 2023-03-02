@@ -1,0 +1,23 @@
+curl https://start.spring.io/starter.tgz ^
+	-d bootVersion=2.5.6 ^
+	-d type=maven-project ^
+	-d packaging=jar ^
+	-d jvmVersion=11 ^
+	-d artifactId=WeatherForecast ^
+	-d name=WeatherForecast ^
+	-d packageName=com.example.WeatherForecast ^
+	-d dependencies="oauth2-resource-server,web,security" ^
+	-d baseDir=weatherforecast | tar -xzvf -
+
+
+curl https://start.spring.io/starter.tgz ^
+	-d bootVersion=2.5.6 ^
+	-d type=maven-project ^
+	-d packaging=jar ^
+	-d jvmVersion=11 ^
+	-d artifactId=WeatherForecastClient ^
+	-d name=WeatherForecastClient ^
+	-d packageName=com.example.WeatherForecastClient ^
+	-d dependencies="oauth2-client,web" ^
+	-d baseDir=weatherforecast-client | tar -xzvf -
+

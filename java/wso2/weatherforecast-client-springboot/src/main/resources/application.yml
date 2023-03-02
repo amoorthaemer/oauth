@@ -1,0 +1,15 @@
+spring:
+    main:
+        web-application: none
+    security:
+        oauth2:
+            client:
+                provider:
+                    wso2:
+                        token-uri: https://is.parel25.nl:9443/oauth2/token
+                registration:
+                    wso2:
+                        client-id: KXa2TwKGQNp92ffy57SbvaXJen4a
+                        client-secret: KW5omMPDBjP2YDJCxC2Da0kHwgka
+                        scope: weatherapp
+                        authorization-grant-type: client_credentials

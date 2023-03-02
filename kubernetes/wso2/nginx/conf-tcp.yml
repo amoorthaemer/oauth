@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-nginx
+data:
+  "1433": "mssql/mssql-service:1433"
+  "6379": "redis/redis-service:6379"
+  "8001": "redis/redis-service:8001"
+#  9443: "wso2is/wso2is-service:9443"
+#  9763: "wso2is/wso2is-service:9763"
