@@ -54,6 +54,16 @@ data:
     [user_store]
     type = "database_unique_id"
 
+    # =====================================================
+    # uncomment this if you are deploying a WSO2 IS cluster
+    # =====================================================
+    #[database.user]
+    #type = "mssql"
+    #url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_SHARED_DB;SendStringParametersAsUnicode=false;encrypt=false;trustServerCertificate=true;packetSize=16000;"
+    #username = "sa"
+    #password = "Yry4k3x!3648ah24a"
+    ##password = "$env{MSSQL_SA_PASSWORD}"
+
     [database.identity_db]
     type = "mssql"
     url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_IDENTITY_DB;SendStringParametersAsUnicode=false;encrypt=false;trustServerCertificate=true;packetSize=16000;"
@@ -67,6 +77,16 @@ data:
     username = "sa"
     password = "Yry4k3x!3648ah24a"
     #password = "$env{MSSQL_SA_PASSWORD}"
+
+    # =====================================================
+    # uncomment this if you are deploying a WSO2 IS cluster
+    # =====================================================
+    #[database.bps_database]
+    #type = "mssql"
+    #url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_BPS_DB;SendStringParametersAsUnicode=false;encrypt=false;trustServerCertificate=true;packetSize=16000;"
+    #username = "sa"
+    #password = "Yry4k3x!3648ah24a"
+    ##password = "$env{MSSQL_SA_PASSWORD}"
 
     [keystore.primary]
     file_name = "wso2carbon.jks"
@@ -92,6 +112,18 @@ data:
     IdTokenAllowed=true
     IATValidityPeriod="1h"
 
+    # =====================================================
+    # uncomment this if you are deploying a WSO2 IS cluster
+    # =====================================================
+    #[clustering]
+    #membership_scheme = "kubernetes"
+    #domain = "wso2.carbon.domain"
+    #properties.membershipSchemeClassName = "org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
+    #properties.KUBERNETES_NAMESPACE = "wso2is"
+    #properties.KUBERNETES_SERVICES = "wso2is-service"
+    #properties.KUBERNETES_MASTER_SKIP_SSL_VERIFICATION = "true"
+    #properties.USE_DNS = "false"
+
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -100,6 +132,9 @@ metadata:
   namespace : wso2is
 
 ---
+# ==================================================================================
+# NOTE: change from Deployment to StatefulSet if you are deploying a WSO2 IS cluster
+# ==================================================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
