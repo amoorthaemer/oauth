@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard
+spec:
+  secretName: wildcard
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+  commonName: "*.parel25.nl"
+  dnsNames:
+    - "parel25.nl"
+    - "*.parel25.nl"
