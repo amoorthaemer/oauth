@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: udp-services
   namespace: ingress-nginx
-data:
-  "53": "kube-system/kube-dns:53"
+data: {}
+#  "53": "kube-system/kube-dns:53"

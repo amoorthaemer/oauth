@@ -111,3 +111,50 @@ spec:
     port: 8001
     targetPort: 8001
   type: ClusterIP
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard
+  namespace: redis
+spec:
+  secretName: wildcard
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+  commonName: "*.parel25.nl"
+  dnsNames:
+    - "parel25.nl"
+    - "*.parel25.nl"
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redis-ingress
+  namespace: redis
+  # annotations:
+  #   nginx.ingress.kubernetes.io/enable-modsecurity: "false"
+  #   nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
+  #   nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
+  #   nginx.ingress.kubernetes.io/modsecurity-snippet: |
+  #     SecRuleEngine On
+spec:
+  tls:
+    - hosts:
+        - "*.parel25.nl"
+      secretName: wildcard
+  rules:
+    - host: redis.parel25.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: redis-service
+                port:
+                  number: 8001
+  ingressClassName: nginx

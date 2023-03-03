@@ -28,6 +28,7 @@ metadata:
   namespace: wso2is
 type: Opaque
 data:
+  MSSQL_SERVER: bXNzcWwtc2VydmljZS5tc3NxbC5zdmMuY2x1c3Rlci5sb2NhbAo=
   MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGEK
 ---
 apiVersion: v1
@@ -163,7 +164,13 @@ spec:
       initContainers:
         - name: init-db
           image: busybox:latest
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MSSQL Server deployment"; while ! nc -z mssql-service.mssql.svc.cluster.local 1433; do sleep 1; printf "-"; done; echo -e "  >> MSSQL Server has started";']
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MSSQL Server deployment"; while ! nc -z $MSSQL_SERVER 1433; do sleep 1; printf "-"; done; echo -e "  >> MSSQL Server has started";']
+          env:
+          - name: MSSQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: wso2is-secret
+                key: MSSQL_SERVER
       terminationGracePeriodSeconds: 30
       securityContext:
         runAsUser: 802
@@ -199,7 +206,10 @@ spec:
         - name: HOST_NAME
           value: "is.parel25.nl"
         - name: MSSQL_SERVER
-          value: "mssql-service.mssql.svc.cluster.local"
+          valueFrom:
+            secretKeyRef:
+              name: wso2is-secret
+              key: MSSQL_SERVER
         - name: MSSQL_SA_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -240,6 +250,23 @@ spec:
   type: ClusterIP
 
 ---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard
+  namespace: wso2is
+spec:
+  secretName: wildcard
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+  commonName: "*.parel25.nl"
+  dnsNames:
+    - "parel25.nl"
+    - "*.parel25.nl"
+
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -251,7 +278,8 @@ spec:
   tls:
     - hosts:
         - "*.parel25.nl"
-      secretName: wso2is-cert
+        - "parel25.nl"
+      secretName: wildcard
   rules:
     - host: is.parel25.nl
       http:
