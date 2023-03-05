@@ -11,6 +11,33 @@ metadata:
 type: Opaque
 data:
   MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGEK
+  MSSQL_TLS_CERT: L3Zhci9vcHQvbXNzcWwvdGxzL3Rscy5jcnQK
+  MSSQL_TLS_KEY: L3Zhci9vcHQvbXNzcWwvdGxzL3Rscy5rZXkK
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mssql-certificate
+  namespace: mssql
+spec:
+  secretName: mssql-cert
+  duration: 2160h
+  renewBefore: 360h
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  commonName: MSSQL Server
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -45,8 +72,8 @@ spec:
         fsGroup: 10001
       containers:
       - name: mssql
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        imagePullPolicy: Always
+        image: mssql:2022-latest
+        imagePullPolicy: Never
         livenessProbe:
           exec:
             command:
@@ -68,17 +95,19 @@ spec:
         resources:
           requests:
             memory: "1.5G"
-            cpu: "500m"
+            cpu: "1000m"
           limits:
             memory: "1.5G"
-            cpu: "500m"
+            cpu: "1000m"
         volumeMounts:
-          - name: mssqldb-data
-            mountPath: "/var/opt/mssql/data"
-          - name: mssqldb-log
-            mountPath: "/var/opt/mssql/log"
-          - name: mssqldb-backup
-            mountPath: "/var/opt/mssql/backup"
+           - name: mssqldb-data
+             mountPath: "/var/opt/mssql/data"
+           - name: mssqldb-log
+             mountPath: "/var/opt/mssql/log"
+           - name: mssqldb-backup
+             mountPath: "/var/opt/mssql/backup"
+           - name: mssql-tls
+             mountPath: "/var/opt/mssql/tls"
         ports:
         - containerPort: 1433
           protocol: TCP
@@ -100,8 +129,18 @@ spec:
           value: "en_US.UTF-8"
         - name: TZ
           value: "Europe/Amsterdam"
-        - name: "CONFIG_EDGE_BUILD"
+        - name: CONFIG_EDGE_BUILD
           value: "0"
+        - name: MSSQL_TLS_CERT
+          valueFrom:
+              secretKeyRef:
+                name: mssql-secret
+                key: MSSQL_TLS_CERT
+        - name: MSSQL_TLS_KEY
+          valueFrom:
+              secretKeyRef:
+                name: mssql-secret
+                key: MSSQL_TLS_KEY
       volumes:
         - name: mssqldb-data
           hostPath:
@@ -115,6 +154,14 @@ spec:
           hostPath:
             path: "/run/desktop/mnt/host/c/My Databases/MSSQL/backup"
             type: DirectoryOrCreate
+        - name: mssql-tls
+          secret:
+            secretName: mssql-cert
+            items:
+            - key: tls.key
+              path: tls.key
+            - key: tls.crt
+              path: tls.crt
       serviceAccountName: "mssql-account"
 ---
 apiVersion: v1
