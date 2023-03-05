@@ -1,9 +1,5 @@
 #!/bin/bash
 
-sudo mkdir -p /var/opt/mssql/data
-sudo chmod 755 /var/opt/mssql/*
-sudo chown mssql:root /var/opt/mssql/*
-
 if [ -n "$MSSQL_TLS_CERT" ] && [ -n "$MSSQL_TLS_KEY" ]; then
     if [ -f $MSSQL_TLS_CERT ] && [ -f $MSSQL_TLS_KEY ]; then
         echo "Configuring TLS..."
@@ -28,9 +24,5 @@ if [ -n "$MSSQL_TLS_CERT" ] && [ -n "$MSSQL_TLS_KEY" ]; then
     fi
 fi
 
-echo "Checking permssions ..."
-source /opt/mssql/bin/permissions_check.sh
-
-echo "Starting MSSQL Server"
 /opt/mssql/bin/sqlservr
 

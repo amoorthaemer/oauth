@@ -1,26 +1,26 @@
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: wso2is
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wso2is
 
-# ---
-# apiVersion: cert-manager.io/v1
-# kind: Certificate
-# metadata:
-#   name: wso2is-cert
-#   namespace: wso2is
-# spec:
-#   secretName: wso2is-cert
-#   issuerRef:
-#     name: letsencrypt
-#     kind: ClusterIssuer
-#     group: cert-manager.io
-#   commonName: "*.parel25.nl"
-#   dnsNames:
-#     - "parel25.nl"
-#     - "*.parel25.nl"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wso2is-cert
+  namespace: wso2is
+spec:
+  secretName: wso2is-cert
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+    group: cert-manager.io
+  commonName: "*.parel25.nl"
+  dnsNames:
+    - "parel25.nl"
+    - "*.parel25.nl"
 
-# ---
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -28,8 +28,8 @@ metadata:
   namespace: wso2is
 type: Opaque
 data:
-  MSSQL_SERVER: bXNzcWwtc2VydmljZS5tc3NxbC5zdmMuY2x1c3Rlci5sb2NhbAo=
-  MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGEK
+  MSSQL_SERVER: bXNzcWwtc2VydmljZS5tc3NxbC5zdmMuY2x1c3Rlci5sb2NhbA==
+  MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGE=
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -180,11 +180,11 @@ spec:
         imagePullPolicy: Never
         resources:
           requests:
-            memory: "1.25G"
-            cpu: "500m"
+            memory: "1.5G"
+            cpu: "1000m"
           limits:
-            memory: "1.25G"
-            cpu: "500m"
+            memory: "1.5G"
+            cpu: "1000m"
         lifecycle:
           preStop:
             exec:

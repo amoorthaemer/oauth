@@ -10,35 +10,35 @@ metadata:
   namespace: mssql
 type: Opaque
 data:
-  MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGEK
-  MSSQL_TLS_CERT: L3Zhci9vcHQvbXNzcWwvdGxzL3Rscy5jcnQK
-  MSSQL_TLS_KEY: L3Zhci9vcHQvbXNzcWwvdGxzL3Rscy5rZXkK
+  MSSQL_SA_PASSWORD: WXJ5NGszeCEzNjQ4YWgyNGE=
+  MSSQL_TLS_CERT: L3Zhci9vcHQvbXNzcWwvdGxzL3Rscy5jcnQ=
+  MSSQL_TLS_KEY: L3Zhci9vcHQvbXNzcWwvdGxzL3Rscy5rZXk=
 
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: mssql-certificate
-  namespace: mssql
-spec:
-  secretName: mssql-cert
-  duration: 2160h
-  renewBefore: 360h
-  isCA: false
-  privateKey:
-    algorithm: RSA
-    size: 2048
-  usages:
-    - digital signature
-    - key encipherment
-    - server auth
-  commonName: MSSQL Server
-  issuerRef:
-    name: ca-issuer
-    kind: ClusterIssuer
-    group: cert-manager.io
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: mssql-certificate
+#   namespace: mssql
+# spec:
+#   secretName: mssql-cert
+#   duration: 2160h
+#   renewBefore: 360h
+#   isCA: false
+#   privateKey:
+#     algorithm: RSA
+#     size: 2048
+#   usages:
+#     - digital signature
+#     - key encipherment
+#     - server auth
+#   commonName: MSSQL Server
+#   issuerRef:
+#     name: ca-issuer
+#     kind: ClusterIssuer
+#     group: cert-manager.io
 
----
+# ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -67,7 +67,6 @@ spec:
         app: mssql
     spec:
       terminationGracePeriodSeconds: 30
-      hostname: sqlserver
       securityContext:
         fsGroup: 10001
       containers:

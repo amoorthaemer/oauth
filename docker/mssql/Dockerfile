@@ -15,7 +15,9 @@ ENV MSSQL_TLS_CIPHERS=
 ENV MSSQL_TLS_FORCE=0
 
 USER root
-RUN apt-get update && apt-get -y upgrade && apt-get -y install sudo
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get -y install sudo netcat
 
 RUN adduser mssql sudo
 RUN echo 'mssql ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/sudo-mssql
@@ -25,7 +27,4 @@ WORKDIR /home/mssql
 
 COPY ./docker-entrypoint.sh /home/mssql
 
-ENTRYPOINT "/home/mssql/docker-entrypoint.sh"
-
-CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
-
+CMD /bin/bash /home/mssql/docker-entrypoint.sh
