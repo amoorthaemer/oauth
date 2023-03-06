@@ -18,18 +18,31 @@ mono_crash.*
 
 # Build results
 [Dd]ebug/
+**/*/[Dd]ebug/
 [Dd]ebugPublic/
+**/*/[Dd]ebugPublic/
 [Rr]elease/
+**/*/[Rr]elease/
 [Rr]eleases/
+**/*/[Rr]eleases/
 x64/
+**/*/x64/
 x86/
+**/*/x86/
 [Aa][Rr][Mm]/
+**/*/[Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
+**/*/[Aa][Rr][Mm]64/
 bld/
+**/*/bld/
 [Bb]in/
+**/*[Bb]in/
 [Oo]bj/
+**/*/[Oo]bj/
 [Ll]og/
+**/*[Ll]og/
 [Ll]ogs/
+**/*[Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -349,6 +362,18 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-.vscode/
+# VS Code files for those working on multiple tools
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Maven
 .mvn/
+
 .secrets/
