@@ -1,3 +1,10 @@
+Update NgInx-Ingress to expose ports on the localhost. This setup opens Redis and MSSQL ports.
+
+To enable service redirects the ingress-nginx-controller" deployment needs to be changed (see steps below)
+
+NOTE: The file conf-tcp.yml contains the service redirects for thos ports.
+
+==========================================================================================================
 Step 1.
 
 exec: kubectl edit svc -n ingress-nginx ingress-nginx-controller

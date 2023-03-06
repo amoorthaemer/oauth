@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: wso2is-conf
-  namespace: wso2is
+  name: mssql-conf
+  namespace: mssql
 data:
-  HOST_NAME: 'is.parel25.nl'
-  MSSQL_SERVER: 'mssql-service.mssql.svc.cluster.local'
+  MSSQL_PID: 'Developer'
+  MSSQL_EDGE_BUILD: '0'
   LANG: 'en_US.UTF-8'
   LANGUAGE: 'en_US:en'
   LC_ALL: 'en_US.UTF-8'

@@ -52,43 +52,61 @@ spec:
           failureThreshold: 3
         resources:
           requests:
-            memory: "1.5G"
-            cpu: "1000m"
+            memory: '1.5G'
+            cpu: '1000m'
           limits:
-            memory: "1.5G"
-            cpu: "1000m"
+            memory: '1.5G'
+            cpu: '1000m'
         volumeMounts:
            - name: mssqldb-data
-             mountPath: "/var/opt/mssql/data"
+             mountPath: '/var/opt/mssql/data'
            - name: mssqldb-log
-             mountPath: "/var/opt/mssql/log"
+             mountPath: '/var/opt/mssql/log'
            - name: mssqldb-backup
-             mountPath: "/var/opt/mssql/backup"
+             mountPath: '/var/opt/mssql/backup'
            - name: mssql-tls
-             mountPath: "/var/opt/mssql/tls"
+             mountPath: '/var/opt/mssql/tls'
         ports:
         - containerPort: 1433
           protocol: TCP
         env:
+        - name: ACCEPT_EULA
+          value: 'Y'
         - name: MSSQL_PID
-          value: "Developer"
+          valueFrom:
+              configMapKeyRef:
+                name: mssql-conf
+                key: MSSQL_PID
         - name: MSSQL_SA_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mssql-secret
               key: MSSQL_SA_PASSWORD
-        - name: ACCEPT_EULA
-          value: "Y"
         - name: LANG
-          value: "en_US.UTF-8"
+          valueFrom:
+              configMapKeyRef:
+                name: mssql-conf
+                key: LANG
         - name: LANGUAGE
-          value: "en_US:en"
+          valueFrom:
+              configMapKeyRef:
+                name: mssql-conf
+                key: LANGUAGE
         - name: LC_ALL
-          value: "en_US.UTF-8"
+          valueFrom:
+              configMapKeyRef:
+                name: mssql-conf
+                key: LC_ALL
         - name: TZ
-          value: "Europe/Amsterdam"
+          valueFrom:
+              configMapKeyRef:
+                name: mssql-conf
+                key: TZ
         - name: CONFIG_EDGE_BUILD
-          value: "0"
+          valueFrom:
+              configMapKeyRef:
+                name: mssql-conf
+                key: MSSQL_EDGE_BUILD
         - name: MSSQL_TLS_CERT
           valueFrom:
               secretKeyRef:
@@ -102,15 +120,15 @@ spec:
       volumes:
         - name: mssqldb-data
           hostPath:
-            path: "/run/desktop/mnt/host/c/My Databases/MSSQL/data"
+            path: '/run/desktop/mnt/host/c/My Databases/MSSQL/data'
             type: DirectoryOrCreate
         - name: mssqldb-log
           hostPath:
-            path: "/run/desktop/mnt/host/c/My Databases/MSSQL/log"
+            path: '/run/desktop/mnt/host/c/My Databases/MSSQL/log'
             type: DirectoryOrCreate
         - name: mssqldb-backup
           hostPath:
-            path: "/run/desktop/mnt/host/c/My Databases/MSSQL/backup"
+            path: '/run/desktop/mnt/host/c/My Databases/MSSQL/backup'
             type: DirectoryOrCreate
         - name: mssql-tls
           secret:
@@ -120,7 +138,7 @@ spec:
               path: tls.key
             - key: tls.crt
               path: tls.crt
-      serviceAccountName: "mssql-account"
+      serviceAccountName: 'mssql-account'
 ---
 apiVersion: v1
 kind: Service

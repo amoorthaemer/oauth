@@ -1,15 +1,15 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: wso2is-cert
+  name: wildcard
   namespace: wso2is
 spec:
-  secretName: wso2is-cert
+  secretName: wildcard
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer
     group: cert-manager.io
-  commonName: "*.parel25.nl"
+  commonName: '*.parel25.nl'
   dnsNames:
-    - "parel25.nl"
-    - "*.parel25.nl"
+    - 'parel25.nl'
+    - '*.parel25.nl'

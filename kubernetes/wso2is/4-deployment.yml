@@ -124,9 +124,9 @@ spec:
         app: wso2is
     spec:
       hostAliases:
-        - ip: "127.0.0.1"
+        - ip: '127.0.0.1'
           hostnames:
-            - "is.parel25.nl"
+            - 'is.parel25.nl'
       initContainers:
         - name: init-db
           image: busybox:latest
@@ -146,10 +146,10 @@ spec:
         imagePullPolicy: Never
         resources:
           requests:
-            memory: "1.5G"
+            memory: '1.5G'
             cpu: "1000m"
           limits:
-            memory: "1.5G"
+            memory: '1.5G'
             cpu: "1000m"
         lifecycle:
           preStop:
@@ -208,7 +208,7 @@ spec:
       - name: wso2is-server-conf
         configMap:
           name: wso2is-server-conf
-      serviceAccountName: "wso2is-account"
+      serviceAccountName: 'wso2is-account'
 
 ---
 apiVersion: v1
@@ -231,35 +231,18 @@ spec:
   type: ClusterIP
 
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: wildcard
-  namespace: wso2is
-spec:
-  secretName: wildcard
-  issuerRef:
-    name: letsencrypt
-    kind: ClusterIssuer
-    group: cert-manager.io
-  commonName: "*.parel25.nl"
-  dnsNames:
-    - "parel25.nl"
-    - "*.parel25.nl"
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wso2is-ingress
   namespace: wso2is
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/backend-protocol: 'HTTPS'
 spec:
   tls:
     - hosts:
-        - "*.parel25.nl"
-        - "parel25.nl"
+        - '*.parel25.nl'
+        - 'parel25.nl'
       secretName: wildcard
   rules:
     - host: is.parel25.nl

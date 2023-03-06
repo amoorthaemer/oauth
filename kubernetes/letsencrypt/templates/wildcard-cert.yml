@@ -2,14 +2,14 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard
-  namespace: "$$NAMESPACE$$""
+  namespace: '$$NAMESPACE$$'
 spec:
   secretName: wildcard
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer
     group: cert-manager.io
-  commonName: "*.parel25.nl"
+  commonName: '*.<your domain>'
   dnsNames:
-    - "parel25.nl"
-    - "*.parel25.nl"
+    - '<your domain>'
+    - '*.<your domain>'
