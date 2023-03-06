@@ -1,6 +1,7 @@
 # OAuth REPO
 
 This repository contains resources to setup a WSO2 Identity Server (IdP) on (Docker) Kubernetes
+
 Required deployments:
 - Cluster issuer for NgInx/Ingress certificates
 - MSSQL server
