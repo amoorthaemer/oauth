@@ -5,18 +5,18 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: bert.moorthaemer@gmail.com
+    email: <REDACTED>
     privateKeySecretRef:
       name: letsencrypt-secret
     solvers:
     - dns01:
         azureDNS:
-          clientID: '2d2001a5-000e-41c9-b730-e6296acdfb85'
+          clientID: <REDACTED>
           clientSecretSecretRef:
             name: azuredns-config
             key: client-secret
-          subscriptionID: '1aaadc54-ba26-4acc-9ac6-ac1e43a1664c'
-          tenantID: 'a4a8edd7-6215-46f9-a1b0-e267e20c88c6'
-          resourceGroupName: 'parel25-rg'
-          hostedZoneName: 'parel25.nl'
+          subscriptionID: <REDACTED>
+          tenantID: <REDACTED>
+          resourceGroupName: <REDACTED>
+          hostedZoneName: <REDACTED>
           environment: AzurePublicCloud
