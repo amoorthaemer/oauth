@@ -6,13 +6,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using WeatherForecast.Api.Authorization;
@@ -71,21 +69,21 @@ internal class Startup {
 			});
 		});
 
-		// NGINX
-		services.AddCertificateForwarding(options => {
-			options.CertificateHeader = "ssl-client-cert";
+		//// NGINX
+		//services.AddCertificateForwarding(options => {
+		//	options.CertificateHeader = "ssl-client-cert";
 
-			options.HeaderConverter = (headerValue) =>
-			{
-				X509Certificate2? certificate = null;
+		//	options.HeaderConverter = (headerValue) =>
+		//	{
+		//		X509Certificate2? certificate = null;
 
-				if (!string.IsNullOrWhiteSpace(headerValue)) {
-					certificate = X509Certificate2.CreateFromPem(
-						WebUtility.UrlDecode(headerValue));
-				}
-				return certificate!;
-			};
-		});
+		//		if (!string.IsNullOrWhiteSpace(headerValue)) {
+		//			certificate = X509Certificate2.CreateFromPem(
+		//				WebUtility.UrlDecode(headerValue));
+		//		}
+		//		return certificate!;
+		//	};
+		//});
 
 		services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 

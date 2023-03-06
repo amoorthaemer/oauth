@@ -78,6 +78,19 @@ data:
     IdTokenAllowed=true
     IATValidityPeriod="1h"
 
+    [cors]
+    allow_generic_http_requests = true
+    allow_any_origin = true
+    allowed_origins = []
+    allow_subdomains = true
+    supported_methods = []
+    support_any_header = true
+    supported_headers = []
+    exposed_headers = []
+    supports_credentials = true
+    max_age = 3600
+    tag_requests = false
+
     # =====================================================
     # uncomment this if you are deploying a WSO2 IS cluster
     # =====================================================
@@ -236,6 +249,8 @@ metadata:
   namespace: wso2is
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: 'HTTPS'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-methods: 'PUT, GET, POST, OPTIONS'
 spec:
   tls:
     - hosts:
