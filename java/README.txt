@@ -1,0 +1,1 @@
+Sample in JAVA to authenticate against a WSO2 IdP
