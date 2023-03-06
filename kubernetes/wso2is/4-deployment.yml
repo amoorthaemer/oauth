@@ -36,15 +36,13 @@ data:
     type = "mssql"
     url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_IDENTITY_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;packetSize=16000;"
     username = "sa"
-    password = "Yry4k3x!3648ah24a"
-    #password = "$env{MSSQL_SA_PASSWORD}"
+    password = "$env{MSSQL_SA_PASSWORD}"
 
     [database.shared_db]
     type = "mssql"
     url = "jdbc:sqlserver://$env{MSSQL_SERVER}:1433;databaseName=WSO2_SHARED_DB;SendStringParametersAsUnicode=false;encrypt=true;trustServerCertificate=true;packetSize=16000;"
     username = "sa"
-    password = "Yry4k3x!3648ah24a"
-    #password = "$env{MSSQL_SA_PASSWORD}"
+    password = "$env{MSSQL_SA_PASSWORD}"
 
     # =====================================================
     # uncomment this if you are deploying a WSO2 IS cluster
