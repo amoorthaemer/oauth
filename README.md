@@ -11,3 +11,5 @@ Required deployments:
 Before deploying WSO2 IdP make certain the required databases have been initialized in MSSQL. There is no automated deployment of the databases (yet)
 
 For setting up the minimal databases (WSO2_SHARED_DB and WSO2_IDENTITY_DB)  and other stuff visit: https://is.docs.wso2.com/en/latest/deploy/change-to-mssql/
+
+(NOTE: This repo uses Git LFS!)
