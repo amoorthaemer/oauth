@@ -4,7 +4,7 @@ This repository contains resources to setup a WSO2 Identity Server (IdP) on (Doc
 
 Required deployments:
 - Cluster issuer for NgInx/Ingress certificates
-- MSSQL server
+- MSSQL server (either container or local instance)
 - WSO2 IdP
 
 Before deploying WSO2 IdP make certain the required databases have been initialized in MSSQL. There is no automated deployment of the databases (yet)
