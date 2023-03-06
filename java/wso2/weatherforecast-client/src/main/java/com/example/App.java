@@ -32,15 +32,15 @@ public final class App {
         AuthorizationGrant clientGrant = new ClientCredentialsGrant();
 
         // The credentials to authenticate the client at the token endpoint
-        ClientID clientID = new ClientID("KXa2TwKGQNp92ffy57SbvaXJen4a");
-        Secret clientSecret = new Secret("KW5omMPDBjP2YDJCxC2Da0kHwgka");
+        ClientID clientID = new ClientID("42kRO0QRqpf3cyDSj12qZuWSQ7Aa");
+        Secret clientSecret = new Secret("E9Y4mYJyYwcEfJZ4Os_X9C3Vw6sa");
         ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecret);
 
         // The request scope for the token (may be optional)
         Scope scope = new Scope("weatherapp");
 
         // The token endpoint
-        URI tokenEndpoint = new URI("https://is.parel25.nl:9443/oauth2/token");
+        URI tokenEndpoint = new URI("https://is.parel25.nl/oauth2/token");
 
         // Make the token request
         TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, clientGrant, scope);
