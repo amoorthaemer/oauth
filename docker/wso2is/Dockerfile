@@ -97,12 +97,6 @@ RUN \
     && useradd --system --create-home --home-dir ${USER_HOME} --no-log-init -g ${USER_GROUP_ID} -u ${USER_ID} ${USER} \
     && echo '[ ! -z "${TERM}" -a -r /etc/motd ] && cat /etc/motd' >> /etc/bash.bashrc; echo "${MOTD}" > /etc/motd
 
-# allow sudo
-#RUN \
-#    touch /etc/sudoers \
-#    && echo "${USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
-#    && passwd -d ${USER}
-
 # create Java prefs dir
 # this is to avoid warning logs printed by FileSystemPreferences class
 RUN \
@@ -155,7 +149,7 @@ ENV JAVA_OPTS="-Djava.util.prefs.systemRoot=${USER_HOME}/.java -Djava.util.prefs
     TZ=${TIMEZONE}
 
 # expose ports
-#EXPOSE 4000 9763 9443
+EXPOSE 4000 9763 9443
 
 # initiate container and start WSO2 Carbon server
 ENTRYPOINT ["/home/wso2carbon/docker-entrypoint.sh"]
