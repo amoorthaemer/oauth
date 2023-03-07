@@ -10,14 +10,6 @@ public class Program {
 			.CreateLogger();
 
 		try {
-			//await Host
-			//	.CreateDefaultBuilder(args)
-			//	.UseSerilog()
-			//	.ConfigureWebHostDefaults(builder => {
-			//		builder.UseStartup<Startup>();
-			//})
-			//.Build()
-			//.RunAsync();
 			var builder = WebApplication.CreateBuilder(args);
 
 			builder.Host.UseSerilog();
@@ -32,7 +24,6 @@ public class Program {
 			var app = builder.Build();
 
 			startUp.Configure(app);
-			// Add services to the container.
 
 			await app.RunAsync();
 		} catch (Exception ex) {

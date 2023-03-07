@@ -91,7 +91,7 @@ internal class Startup {
 			options.DefaultScheme = MultiAuthenticationScheme;
 			options.DefaultChallengeScheme = MultiAuthenticationScheme;
 		})
-		// JWT
+		// OAuth 2.0
 		.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
 			var signingKeys = GetSigningKeys(Authority);
 			var hasSigningKeys = signingKeys.Any();
@@ -146,7 +146,7 @@ internal class Startup {
 				}
 			};
 		})
-		// AUTHN SELECTOR
+		// AuthN SELECTOR
 		.AddPolicyScheme(MultiAuthenticationScheme, string.Empty, options => {
 			options.ForwardDefaultSelector = context => {
 				string? header = context.Request.Headers[HeaderNames.Authorization];
