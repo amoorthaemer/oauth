@@ -1,4 +1,6 @@
-﻿using AspNetCore.Authentication.ApiKey;
+﻿using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using AspNetCore.Authentication.ApiKey;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
@@ -11,8 +13,6 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using WeatherForecast.Api.Authorization;
 using WeatherForecast.Api.Controllers;
 using WeatherForecast.Api.Services;
@@ -93,25 +93,27 @@ internal class Startup {
 		})
 		// JWT
 		.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
-			var signingKeys = GetSigningKeys(options.Authority);
+			var signingKeys = GetSigningKeys(Authority);
 			var hasSigningKeys = signingKeys.Any();
 
-			//options.Authority = Authority;
-			//options.Audience = Audience;
+			options.Authority = Authority;
+			options.Audience = Audience;
 
-			//options.TokenValidationParameters = new() {
-			//	ClockSkew = TimeSpan.FromMinutes(5),
-			//	RequireSignedTokens = hasSigningKeys,
-			//	RequireExpirationTime = true,
-			//	ValidateLifetime = true,
-			//	ValidateAudience = true,
-			//	ValidAudience = Audience,
-			//	ValidateIssuer = true,
-			//	ValidIssuer = Authority,
-			//	IssuerSigningKey = hasSigningKeys
-			//		? signingKeys.First()
-			//		: null,
-			//};
+			options.TokenValidationParameters ??= new();
+
+			options.TokenValidationParameters.ValidIssuer = Authority;
+			options.TokenValidationParameters.ValidIssuers ??= new List<string>();
+			options.TokenValidationParameters.ValidIssuers = new[] { Authority }
+				.Concat(options.TokenValidationParameters.ValidIssuers)
+				.Distinct()
+				.ToArray();
+
+			options.TokenValidationParameters.ValidAudience = Audience;
+			options.TokenValidationParameters.ValidAudiences ??= new List<string>();
+			options.TokenValidationParameters.ValidAudiences = new[] { Audience }
+				.Concat(options.TokenValidationParameters.ValidAudiences)
+				.Distinct()
+				.ToArray();
 
 			options.TokenValidationParameters.RequireSignedTokens = hasSigningKeys;
 			options.TokenValidationParameters.IssuerSigningKey = hasSigningKeys
@@ -192,7 +194,7 @@ internal class Startup {
 				Version = "v1"
 			});
 
-			// Bearer
+			// OAuth 2.0
 			options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme() {
 				In = ParameterLocation.Header,
 				Description = "Please enter a valid client-ID and secret",
@@ -221,7 +223,7 @@ internal class Startup {
 				}
 			});
 
-			// Api Key
+			// API Key
 			options.AddSecurityDefinition(ApiKeyDefaults.AuthenticationScheme, new OpenApiSecurityScheme() {
 				In = ParameterLocation.Header,
 				Description = $"Please enter a valid API Key",
