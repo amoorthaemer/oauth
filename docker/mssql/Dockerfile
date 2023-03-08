@@ -8,23 +8,7 @@ ENV CONFIG_EDGE_BUILD=0
 
 ENV MSSQL_PID=Standard
 
-ENV MSSQL_TLS_CERT=
-ENV MSSQL_TLS_KEY=
-ENV MSSQL_TLS_PROTOCOLS=1.2
-ENV MSSQL_TLS_CIPHERS=
-ENV MSSQL_TLS_FORCE=0
-
 USER root
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install sudo netcat
-
-RUN adduser mssql sudo
-RUN echo 'mssql ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/sudo-mssql
-
-USER mssql
-WORKDIR /home/mssql
-
-COPY ./docker-entrypoint.sh /home/mssql
-
-CMD /bin/bash /home/mssql/docker-entrypoint.sh
+    && apt-get -y install netcat

@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-server-conf
+  namespace : opa
+data: 
+  config.yml: |-
+    persistence_directory: ${OPA_PERSISTENCE_DIR}
+
+    storage:
+      disk:
+        directory: ${OPA_STORAGE_DIR}
+        auto_create: true
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: opa-account
+  namespace : opa
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa-deployment
+  namespace: opa
+  labels:
+    app: opa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 802
+        fsGroup: 802
+      containers:
+      - image: opa:latest
+        imagePullPolicy: Never
+        resources:
+          requests:
+            memory: "0.5G"
+            cpu: "200m"
+          limits:
+            memory: "0.5G"
+            cpu: "200m"
+        name: opa
+        volumeMounts:
+          # - name: opa-data
+          #   mountPath: "/var/opt/opa/data"
+          # - name: opa-persistence
+          #   mountPath: "/var/opt/opa/persistence"
+          - name: opa-server-conf
+            mountPath: "/var/opt/opa/conf.d/config.yml"
+            subPath: "config.yml"
+        ports:
+        - containerPort: 8181
+          protocol: TCP
+        env:
+        - name: LANG
+          value: "en_US.UTF-8"
+        - name: LANGUAGE
+          value: "en_US:en"
+        - name: LC_ALL
+          value: "en_US.UTF-8"
+        - name: TZ
+          value: "Europe/Amsterdam"
+      volumes:
+        # - name: opa-data
+        #   hostPath:
+        #     path: "/run/desktop/mnt/host/c/My Databases/Opa/data"
+        #     type: DirectoryOrCreate
+        # - name: opa-persistence
+        #   hostPath:
+        #     path: "/run/desktop/mnt/host/c/My Databases/Opa/persistence"
+        #     type: DirectoryOrCreate
+        - name: opa-server-conf
+          configMap:
+            name: opa-server-conf
+      serviceAccountName: "opa-account"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opa-service
+  namespace: opa
+spec:
+  selector:
+    app: opa
+  ports:
+  - name: opa
+    protocol: TCP
+    port: 8181
+    targetPort: 8181
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opa-ingress
+  namespace: opa
+spec:
+  tls:
+    - hosts:
+        - "*.parel25.nl"
+      secretName: wildcard
+  rules:
+    - host: opa.parel25.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opa-service
+                port:
+                  number: 8181
+  ingressClassName: nginx

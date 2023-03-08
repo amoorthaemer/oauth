@@ -106,7 +106,7 @@ RUN \
     && chown -R ${USER}:${USER_GROUP} ${USER_HOME}/.java
 
 # copy init script to user home
-COPY --chown=wso2carbon:wso2 docker-entrypoint.sh ${USER_HOME}/
+COPY --chown=${USER}:${USER_GROUP} docker-entrypoint.sh /
 
 # install required packages
 
@@ -152,6 +152,6 @@ ENV JAVA_OPTS="-Djava.util.prefs.systemRoot=${USER_HOME}/.java -Djava.util.prefs
 EXPOSE 4000 9763 9443
 
 # initiate container and start WSO2 Carbon server
-ENTRYPOINT ["/home/wso2carbon/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
  

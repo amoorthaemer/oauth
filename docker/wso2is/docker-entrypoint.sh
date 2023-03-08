@@ -17,6 +17,8 @@
 
 set -e
 
+cd ${WORKING_DIRECTORY}
+
 # volume mounts
 config_volume=${WORKING_DIRECTORY}/wso2-config-volume
 artifact_volume=${WORKING_DIRECTORY}/wso2-artifact-volume

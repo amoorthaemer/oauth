@@ -1,4 +1,16 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mssql-server-conf
+  namespace: mssql
+data:
+  mssql.conf: |-
+    [network]
+    tlscert = /var/opt/mssql/tls/tls.crt
+    tlskey = /var/opt/mssql/tls/tls.key
+
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: mssql-account
@@ -27,7 +39,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       securityContext:
-        fsGroup: 10001
+        fsGroup: 999
       containers:
       - name: mssql
         image: mssql:2022-latest
@@ -64,6 +76,9 @@ spec:
              mountPath: '/var/opt/mssql/log'
            - name: mssqldb-backup
              mountPath: '/var/opt/mssql/backup'
+           - name: mssql-server-conf
+             mountPath: /var/opt/mssql/mssql.conf
+             subPath: mssql.conf
            - name: mssql-tls
              mountPath: '/var/opt/mssql/tls'
         ports:
@@ -107,16 +122,6 @@ spec:
               configMapKeyRef:
                 name: mssql-conf
                 key: MSSQL_EDGE_BUILD
-        - name: MSSQL_TLS_CERT
-          valueFrom:
-              secretKeyRef:
-                name: mssql-secret
-                key: MSSQL_TLS_CERT
-        - name: MSSQL_TLS_KEY
-          valueFrom:
-              secretKeyRef:
-                name: mssql-secret
-                key: MSSQL_TLS_KEY
       volumes:
         - name: mssqldb-data
           hostPath:
@@ -130,6 +135,9 @@ spec:
           hostPath:
             path: '/run/desktop/mnt/host/c/My Databases/MSSQL/backup'
             type: DirectoryOrCreate
+        - name: mssql-server-conf
+          configMap:
+            name: mssql-server-conf
         - name: mssql-tls
           secret:
             secretName: mssql-cert

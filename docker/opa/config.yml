@@ -1,0 +1,6 @@
+persistence_directory: ${OPA_PERSISTENCE_DIR}
+
+storage:
+  disk:
+    directory: ${OPA_STORAGE_DIR}
+    auto_create: true
