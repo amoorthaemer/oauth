@@ -4,7 +4,9 @@ using AspNetCore.Authentication.ApiKey;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
@@ -130,7 +132,7 @@ internal class Startup {
 		// CERTIFICATE
 		.AddCertificate(CertificateAuthenticationDefaults.AuthenticationScheme, options => {
 			options.RevocationMode = X509RevocationMode.NoCheck;
-			options.AllowedCertificateTypes = CertificateTypes.All; 
+			options.AllowedCertificateTypes = CertificateTypes.All;
 
 			options.Events = new CertificateAuthenticationEvents() {
 				OnCertificateValidated = context => {
@@ -152,12 +154,31 @@ internal class Startup {
 				}
 			};
 		})
+		// Swagger AuthN
+		//.AddCookie("CookieScheme")
+		//.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
+		//	options.SignInScheme = "CookieScheme";
+		//	options.Authority = Authority;
+		//	options.ClientId = "DNhnanoGorHpOB7kDMedJtYPl2Ma";
+		//	options.ClientSecret = "u3rrdgWMp2IL0qPR2_6DyUm9qrMa";
+		//	options.ResponseType = "code";
+		//	options.Prompt = "Login";
+		//	options.GetClaimsFromUserInfoEndpoint = true;
+		//	options.SaveTokens = true;
+		//})
 		// AuthN SELECTOR
 		.AddPolicyScheme(MultiAuthenticationScheme, string.Empty, options => {
 			options.ForwardDefaultSelector = context => {
 				string? header = context.Request.Headers[HeaderNames.Authorization];
-				if (!string.IsNullOrEmpty(header) && header.StartsWith(JwtBearerDefaults.AuthenticationScheme)) {
-					return JwtBearerDefaults.AuthenticationScheme;
+
+				if (!string.IsNullOrEmpty(header)) {
+					if (header.StartsWith(JwtBearerDefaults.AuthenticationScheme)) {
+						return JwtBearerDefaults.AuthenticationScheme;
+					}
+
+					if (header.StartsWith(ApiKeyDefaults.AuthenticationScheme)) {
+						return ApiKeyDefaults.AuthenticationScheme;
+					}
 				}
 
 				header = context.Request.Headers[ApiKeyName];
@@ -172,14 +193,14 @@ internal class Startup {
 		services
 			.AddOpenPolicyAgent()
 			.AddAuthorization(options => {
-				options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, GetPolicy(JwtBearerDefaults.AuthenticationScheme));
-				options.AddPolicy(ApiKeyDefaults.AuthenticationScheme, GetPolicy(ApiKeyDefaults.AuthenticationScheme));
-				options.AddPolicy(CertificateAuthenticationDefaults.AuthenticationScheme, GetPolicy(CertificateAuthenticationDefaults.AuthenticationScheme));
+				//options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, GetPolicy(JwtBearerDefaults.AuthenticationScheme));
+				//options.AddPolicy(ApiKeyDefaults.AuthenticationScheme, GetPolicy(ApiKeyDefaults.AuthenticationScheme));
+				//options.AddPolicy(CertificateAuthenticationDefaults.AuthenticationScheme, GetPolicy(CertificateAuthenticationDefaults.AuthenticationScheme));
 
-				AuthorizationPolicy GetPolicy(params string[] schemes) =>
-					new AuthorizationPolicyBuilder(schemes)
-						.RequireAuthenticatedUser()
-						.Build();
+				//AuthorizationPolicy GetPolicy(params string[] schemes) =>
+				//	new AuthorizationPolicyBuilder(schemes)
+				//		.RequireAuthenticatedUser()
+				//		.Build();
 			});
 
 		services.AddCors(options => {
@@ -258,7 +279,13 @@ internal class Startup {
 
 	public void Configure(WebApplication app) {
 		if (Environment.IsDevelopment()) {
-			app.UseSwagger();
+			app.UseSwagger(options => {
+				options.PreSerializeFilters.Add((swagger, httpReq) => {
+					swagger.Servers = new List<OpenApiServer> {
+						new OpenApiServer { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}" }
+					};
+				});
+			});
 			app.UseSwaggerUI();
 		}
 
@@ -266,6 +293,7 @@ internal class Startup {
 		app.UseCors();
 
 		app.UseRouting();
+		app.UseCookiePolicy();
 
 		app.UseCertificateForwarding();
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.Extensions.Options;
 using OpenPolicyAgent.Common.Client;
 using OpenPolicyAgent.Common.Services;
@@ -13,6 +14,7 @@ internal sealed class OpenPolicyAgentPolicyProvider: IAuthorizationPolicyProvide
 	private readonly ConcurrentDictionary<string, AuthorizationPolicy> PolicyCache = new();
 	private readonly FileSystemWatcher watcher = new();
 	private readonly IOpenPolicyAgentClient opaClient;
+	private readonly OpenPolicyAgentOptions opaOptions;
 
 	// public properties
 
@@ -27,6 +29,7 @@ internal sealed class OpenPolicyAgentPolicyProvider: IAuthorizationPolicyProvide
 	{
 		FallbackPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
 		this.opaClient = opaClient;
+		this.opaOptions = opaOptions.Value;
 
 		var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Policies");
 		if (!Directory.Exists(path)) {
@@ -62,16 +65,22 @@ internal sealed class OpenPolicyAgentPolicyProvider: IAuthorizationPolicyProvide
 		await FallbackPolicyProvider.GetFallbackPolicyAsync();
 
 	public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName) {
-		if (policyName.StartsWith(POLICY_PREFIX, StringComparison.OrdinalIgnoreCase)) {
+		if (policyName.StartsWith(POLICY_PREFIX, StringComparison.InvariantCultureIgnoreCase)) {
 			policyName = policyName[POLICY_PREFIX.Length..];
 
 			if (!string.IsNullOrEmpty(policyName)) {
 				return Task.FromResult<AuthorizationPolicy?>(
-					PolicyCache.GetOrAdd(policyName, oolicy =>
-						new AuthorizationPolicyBuilder()
-							.AddRequirements(new OpenPolicyAgentRequirement(oolicy))
-							.Build()
-					)
+					PolicyCache.GetOrAdd(policyName, policy => {
+						var policyBuilder = new AuthorizationPolicyBuilder();
+
+						if (opaOptions.RequireAuthentication) {
+							policyBuilder.RequireAuthenticatedUser();
+						};
+
+						return policyBuilder
+							.AddRequirements(new OpenPolicyAgentRequirement(policy))
+							.Build();
+					})
 				);
 			}
 		}
