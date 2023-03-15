@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Common", "..\shared\o
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherForecast.Api.Common", "..\shared\api\WeatherForecast.Api.Common.csproj", "{3FE6A1FB-A3EB-40AB-9714-7BD9A18D009B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenPolicyAgent.Common", "..\shared\opa\OpenPolicyAgent.Common.csproj", "{29F55FF0-20D9-48E1-BCF8-FBCBA3E1F7DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3FE6A1FB-A3EB-40AB-9714-7BD9A18D009B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FE6A1FB-A3EB-40AB-9714-7BD9A18D009B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FE6A1FB-A3EB-40AB-9714-7BD9A18D009B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29F55FF0-20D9-48E1-BCF8-FBCBA3E1F7DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F55FF0-20D9-48E1-BCF8-FBCBA3E1F7DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F55FF0-20D9-48E1-BCF8-FBCBA3E1F7DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F55FF0-20D9-48E1-BCF8-FBCBA3E1F7DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

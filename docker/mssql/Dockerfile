@@ -9,6 +9,10 @@ ENV CONFIG_EDGE_BUILD=0
 ENV MSSQL_PID=Standard
 
 USER root
-RUN apt-get update \
+
+RUN \
+    apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install netcat
+    && apt-get -y install --no-install-recommends tzdata ca-certificates locales netcat \
+    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen en_US.UTF-8

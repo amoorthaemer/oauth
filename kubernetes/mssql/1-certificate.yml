@@ -1,0 +1,26 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mssql-certificate
+  namespace: parel25
+spec:
+  secretName: mssql-certificate
+  duration: 2160h
+  renewBefore: 360h
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  commonName: "mssql.parel25.nl"
+  dnsNames:
+    - "mssql.parel25.nl"
+    - "mssql.parel25.svc.cluster.local"
+    - "localhost"
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

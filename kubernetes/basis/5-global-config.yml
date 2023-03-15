@@ -1,0 +1,17 @@
+#
+# Global configuration
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-conf
+  namespace: parel25
+data:
+  MSSQL_SERVER: 'mssql.parel25.nl'
+  REDIS_SERVER: 'redis.parel25.nl'
+  OPA_SERVER: 'opa.parel25.nl'
+  WSO2IS_SERVER: 'is.parel25.nl'
+  LANG: 'en_US.UTF-8'
+  LANGUAGE: 'en_US:en'
+  LC_ALL: 'en_US.UTF-8'
+  TZ: 'Europe/Amsterdam'

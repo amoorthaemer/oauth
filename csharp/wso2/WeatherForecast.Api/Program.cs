@@ -28,6 +28,7 @@ public class Program {
 			await app.RunAsync();
 		} catch (Exception ex) {
 			Log.Fatal(ex, "Application termindated unexpectedly");
+			Console.ReadLine();
 		} finally {
 			Log.CloseAndFlush();
 		}

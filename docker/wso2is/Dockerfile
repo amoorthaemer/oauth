@@ -25,7 +25,8 @@ LABEL maintainer="WSO2 Docker Maintainers dev@wso2.org" \
 #Install JDK Dependencies
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN apt-get update \
+RUN \
+    apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends tzdata curl ca-certificates fontconfig locales ntp sudo \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
@@ -77,10 +78,10 @@ ARG WSO2_SERVER=${WSO2_SERVER_NAME}-${WSO2_SERVER_VERSION}
 ARG WSO2_SERVER_HOME=${USER_HOME}/${WSO2_SERVER}
 
 # build arguments for external artifacts
-ARG DNS_JAVA_VERSION=3.5.2
+ARG DNS_JAVA_VERSION=2.1.8
 ARG K8S_MEMBERSHIP_SCHEME_VERSION=1.0.11
 ARG MYSQL_CONNECTOR_VERSION=8.0.29
-ARG MSSQL_CONNECTOR_VERSION=11.2.3
+ARG MSSQL_CONNECTOR_VERSION=12.2.0
 ARG TIMEZONE=Europe/Amsterdam
 
 # build argument for MOTD
@@ -111,11 +112,23 @@ COPY --chown=${USER}:${USER_GROUP} docker-entrypoint.sh /
 # install required packages
 
 RUN \
-    apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    export `grep "VERSION_ID" /etc/os-release | sed -e 's/^VERSION_ID=\"/VERSION_ID=/' -e 's/\"$//'` \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && export ACCEPT_EULA=Y \
+    && apt-get update \
+    && apt-get -y install gnupg \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/ubuntu/$VERSION_ID/prod.list | tee /etc/apt/sources.list.d/msprod.list \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        apt-transport-https \
         netcat \
         unzip \
         wget \
+        dnsutils \
+        mssql-tools unixodbc-dev \
+    && rm -f /etc/apt/sources.list.d/msprod.list \
     && rm -rf /var/lib/apt/lists/*
 
 ## set the user and work directory

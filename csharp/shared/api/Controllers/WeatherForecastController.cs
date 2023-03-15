@@ -19,7 +19,7 @@ public class WeatherForecastController: ControllerBase {
 		_logger = logger;
 	}
 
-	[HttpGet]
+	[HttpGet, EnforcePolicy("demo.weatherapi.allow")]
 	public IEnumerable<Models.WeatherForecast> Get() {
 		return Enumerable.Range(1, 5).Select(index => new Models.WeatherForecast {
 			Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

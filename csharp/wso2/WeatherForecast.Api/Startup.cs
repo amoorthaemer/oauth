@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using OpenPolicyAgent.Common;
 using WeatherForecast.Api.Authorization;
 using WeatherForecast.Api.Controllers;
 using WeatherForecast.Api.Services;
@@ -69,6 +70,8 @@ internal class Startup {
 			});
 		});
 
+		services.Configure<OpenPolicyAgentOptions>(Configuration.GetSection(nameof(OpenPolicyAgentOptions)));
+
 		//// NGINX
 		//services.AddCertificateForwarding(options => {
 		//	options.CertificateHeader = "ssl-client-cert";
@@ -85,7 +88,9 @@ internal class Startup {
 		//	};
 		//});
 
-		services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+		services
+			.AddTransient<IClaimsTransformation, ClaimsTransformer>()
+			.AddHttpContextAccessor();
 
 		services.AddAuthentication(options => {
 			options.DefaultScheme = MultiAuthenticationScheme;
@@ -133,6 +138,7 @@ internal class Startup {
 						GetClaim(JwtClaimTypes.Subject, context.ClientCertificate.Subject),
 						GetClaim(ClaimTypes.NameIdentifier, context.ClientCertificate.Subject),
 						GetClaim(ClaimTypes.Name, context.ClientCertificate.Subject),
+						new(JwtClaimTypes.Audience, Audience)
 					};
 
 					context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
@@ -163,16 +169,18 @@ internal class Startup {
 			};
 		});
 
-		services.AddAuthorization(options => {
-			options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, GetPolicy(JwtBearerDefaults.AuthenticationScheme));
-			options.AddPolicy(ApiKeyDefaults.AuthenticationScheme, GetPolicy(ApiKeyDefaults.AuthenticationScheme));
-			options.AddPolicy(CertificateAuthenticationDefaults.AuthenticationScheme, GetPolicy(CertificateAuthenticationDefaults.AuthenticationScheme));
+		services
+			.AddOpenPolicyAgent()
+			.AddAuthorization(options => {
+				options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, GetPolicy(JwtBearerDefaults.AuthenticationScheme));
+				options.AddPolicy(ApiKeyDefaults.AuthenticationScheme, GetPolicy(ApiKeyDefaults.AuthenticationScheme));
+				options.AddPolicy(CertificateAuthenticationDefaults.AuthenticationScheme, GetPolicy(CertificateAuthenticationDefaults.AuthenticationScheme));
 
-			AuthorizationPolicy GetPolicy(params string[] schemes) =>
-				new AuthorizationPolicyBuilder(schemes)
-					.RequireAuthenticatedUser()
-					.Build();
-		});
+				AuthorizationPolicy GetPolicy(params string[] schemes) =>
+					new AuthorizationPolicyBuilder(schemes)
+						.RequireAuthenticatedUser()
+						.Build();
+			});
 
 		services.AddCors(options => {
 			options.AddDefaultPolicy(policyBuilder => {
@@ -185,6 +193,7 @@ internal class Startup {
 
 		services
 			.AddControllers()
+			.AddNewtonsoftJson()
 			.AddApplicationPart(typeof(WeatherForecastController).Assembly);
 
 		services.AddEndpointsApiExplorer();

@@ -5,7 +5,7 @@ ENV TZ=Europe/Amsterdam
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends tzdata curl ca-certificates locales ntp jq \
+    && apt-get install -y --no-install-recommends tzdata curl ca-certificates locales jq dnsutils \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
@@ -18,7 +18,7 @@ ARG USER_HOME=/home/${USER}
 
 ARG OPA_HOME=/var/opt/${USER}
 ARG OPA_ARGS=
-ARG OPA_VERSION=0.49.2
+ARG OPA_VERSION=0.50.0
 
 ENV OPA_SERVER_HOME=${OPA_HOME}
 ENV OPA_SERVER_VERSION=${OPA_VERSION}

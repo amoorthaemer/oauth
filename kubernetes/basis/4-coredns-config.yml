@@ -1,0 +1,31 @@
+#
+# CoreDNS
+#
+# 
+# Setup (if coredns-custom is *not* suppored)
+#  kubectl edit configmap -n kube-system coredns
+#  insert the block 'rewrite stop' before 'kubernetes cluster.local in-addr.arpa ip6.arpa'
+#  save
+#
+#
+# Setup (if coredns-custom is supported):
+#   kubectl apply -f ./4-coredns-config.yml
+#   kubectl get configmaps --namespace=kube-system coredns -o yaml
+#   kubectl delete pod --namespace=kube-system -l k8s-app=kube-dns
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  parel25.override: |
+    parel25.nl:53 {
+      log
+      errors
+      rewrite stop {
+        name regex (.*)\.parel25\.nl {1}.parel25.svc.cluster.local
+        answer name (.*)\.parel25\.svc\.cluster\.local {1}.parel25.nl
+      }
+      forward . /etc/resolve.conf
+    }

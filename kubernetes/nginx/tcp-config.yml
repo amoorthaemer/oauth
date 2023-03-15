@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-nginx
+data:
+  "1433": "parel25/mssql:1433"
+  "6379": "parel25/redis:6379"

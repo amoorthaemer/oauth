@@ -1,0 +1,155 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-server-conf
+  namespace: parel25
+data:
+  redis-stack.conf: |
+    maxmemory 100mb
+    maxmemory-policy allkeys-lru
+    notify-keyspace-events gxeKE
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: redis-account
+  namespace : parel25
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: parel25
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      terminationGracePeriodSeconds: 30
+      hostname: redis
+      containers:
+      - image: redis/redis-stack:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "0.5G"
+            cpu: "200m"
+          limits:
+            memory: "0.5G"
+            cpu: "200m"
+        name: redis
+        volumeMounts:
+          - name: redis-data
+            mountPath: "/data"
+          - name: redis-server-conf
+            mountPath: "/redis-stack.conf"
+            subPath: "redis-stack.conf"
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        - containerPort: 8001
+          protocol: TCP
+        # lifecycle:
+        #   postStart:
+        #     exec:
+        #       command: [
+        #         "/bin/sh",
+        #         "-c",
+        #         "curl -L -X PATCH http:/localhost:8001/api/settings",
+        #         "-H 'Content-Type: application/json'",
+        #         "-H 'Accept: application/json'",
+        #         "-d '{\"agreements\":{\"analytics\":true,\"notifications\":true,\"encryption\":false,\"eula\":true}}'"
+        #       ]
+        env:
+        - name: MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-credentials
+              key: MASTER_PASSWORD
+        - name: LANG
+          valueFrom:
+              configMapKeyRef:
+                name: global-conf
+                key: LANG
+        - name: LANGUAGE
+          valueFrom:
+              configMapKeyRef:
+                name: global-conf
+                key: LANGUAGE
+        - name: LC_ALL
+          valueFrom:
+              configMapKeyRef:
+                name: global-conf
+                key: LC_ALL
+        - name: TZ
+          valueFrom:
+              configMapKeyRef:
+                name: global-conf
+                key: TZ
+      volumes:
+        - name: redis-data
+          hostPath:
+            path: "/run/desktop/mnt/host/c/My Databases/Redis"
+            type: DirectoryOrCreate
+        - name: redis-server-conf
+          configMap:
+            name: redis-server-conf
+      serviceAccountName: "redis-account"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: parel25
+spec:
+  selector:
+    app: redis
+  ports:
+  - name: redis
+    protocol: TCP
+    port: 6379
+    targetPort: 6379
+  - name: redis-insight
+    protocol: TCP
+    port: 8001
+    targetPort: 8001
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redis-ingress
+  namespace: parel25
+  # annotations:
+  #   nginx.ingress.kubernetes.io/enable-modsecurity: "false"
+  #   nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
+  #   nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
+  #   nginx.ingress.kubernetes.io/modsecurity-snippet: |
+  #     SecRuleEngine On
+spec:
+  tls:
+    - hosts:
+        - "*.parel25.nl"
+      secretName: wildcard
+  rules:
+    - host: redis.parel25.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: redis
+                port:
+                  number: 8001
+  ingressClassName: nginx

@@ -12,6 +12,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.Authentication.ApiKey" Version="7.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
+		<PackageReference Include="Refit.Newtonsoft.Json" Version="6.3.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\opa\OpenPolicyAgent.Common.csproj" />
 	</ItemGroup>
 </Project>
