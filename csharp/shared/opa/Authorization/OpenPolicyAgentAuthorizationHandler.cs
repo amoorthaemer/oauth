@@ -56,7 +56,7 @@ internal sealed class OpenPolicyAgentAuthorizationHandler: AuthorizationHandler<
 			logger.LogDebug("Evaluation for policy \"{Policy}\" finished. Request: {@Request}, Response: {@Response}",
 				requirement.Policy, request, response);
 
-			if (response.Result == true && opAuthorizationService.IsAuthorized(user, resource, response)) {
+			if (response.Result == true && opAuthorizationService.IsAuthorized(response, user, resource)) {
 				context.Succeed(requirement);
 			}
 		} catch (ApiException ex) {

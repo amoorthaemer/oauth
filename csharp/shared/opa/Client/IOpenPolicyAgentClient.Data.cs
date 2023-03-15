@@ -30,7 +30,7 @@ public partial interface IOpenPolicyAgentClient {
 		[Body] Stream data,
 		[Query, AliasAs("metrics")] bool? includeMetrics = null);
 
-	// NOTE: PATCH isn't syupported yet
+	// NOTE: PATCH isn't supported yet
 
 	[Delete("/v1/data/{**path}")]
 	Task DeleteDocumentAsync(

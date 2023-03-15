@@ -2,6 +2,7 @@
 using System.Net.Mime;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -35,10 +36,13 @@ public static class OpenPolicyAgentServiceCollectionExtensions {
 		services
 			.Configure(setupAction)
 			.AddSingleton<IAuthorizationPolicyProvider, OpenPolicyAgentPolicyProvider>()
-			.AddSingleton<IAuthorizationHandler, OpenPolicyAgentAuthorizationHandler>()
-			.AddSingleton<IOpenPolicyAgentAuthorizationService, DefaultOpenPolicyAgentAuthorizationService>()
-			.AddSingleton<IOpenPolicyAgentRequestFactory, DefaultOpenPolicyAgentRequestFactory>()
-			.AddScoped<AuthorizationHandler>()
+			.AddSingleton<IAuthorizationHandler, OpenPolicyAgentAuthorizationHandler>();
+
+		services.TryAddSingleton<IOpenPolicyAgentAuthorizationService, DefaultOpenPolicyAgentAuthorizationService>();
+		services.TryAddSingleton<IOpenPolicyAgentRequestFactory, DefaultOpenPolicyAgentRequestFactory>();
+		services.TryAddScoped<AuthorizationHandler>();
+
+		services
 			.AddHttpContextAccessor()
 			.AddRefitClient<IOpenPolicyAgentClient>(new RefitSettings() {
 				ContentSerializer = new NewtonsoftJsonContentSerializer(serializerSettings)

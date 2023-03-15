@@ -7,5 +7,5 @@ namespace OpenPolicyAgent.Common.Authorization;
 public class DefaultOpenPolicyAgentAuthorizationService: IOpenPolicyAgentAuthorizationService {
 	// public methods
 
-	public virtual bool IsAuthorized(ClaimsPrincipal user, string? resource, WithResult<bool?> response) => true;
+	public virtual bool IsAuthorized(WithResult<bool?> response, ClaimsPrincipal user, string? resource) => true;
 }
