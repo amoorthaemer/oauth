@@ -5,4 +5,6 @@ metadata:
   namespace: ingress-nginx
 data:
   "1433": "parel25/mssql:1433"
+#  "5671": "parel25/rabbitmq:5671"
+  "5672": "parel25/rabbitmq:5672"
   "6379": "parel25/redis:6379"

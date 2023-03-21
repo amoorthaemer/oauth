@@ -1,0 +1,101 @@
+#
+# vhost
+apiVersion: rabbitmq.com/v1beta1
+kind: Vhost
+metadata:
+  name: rabbitmq-vhost
+  namespace: parel25
+spec:
+  name: rabbitmq-vhost
+  rabbitmqClusterReference:
+    name: rabbitmq
+    
+---
+#
+# admin
+#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-admin-secret
+  namespace: parel25
+type: Opaque
+stringData:
+  username: admin
+  password: admin
+
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: User
+metadata:
+  name: rabbitmq-admin-user
+  namespace: parel25
+spec:
+  tags:
+  - administrator
+  rabbitmqClusterReference:
+    name: rabbitmq
+  importCredentialsSecret:
+    name: rabbitmq-admin-secret
+
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Permission
+metadata:
+  name: rabbitmq-admin-permission
+  namespace: parel25
+spec:
+  vhost: 'rabbitmq-vhost'
+  userReference:
+    name: rabbitmq-admin-user
+  permissions:
+    write: ".*"
+    configure: ".*"
+    read: ".*"
+  rabbitmqClusterReference:
+    name: rabbitmq
+
+---
+#
+# guest
+#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-guest-secret
+  namespace: parel25
+type: Opaque
+stringData:
+  username: guest
+  password: guest
+
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: User
+metadata:
+  name: rabbitmq-guest-user
+  namespace: parel25
+spec:
+  tags:
+  - administrator
+  rabbitmqClusterReference:
+    name: rabbitmq
+  importCredentialsSecret:
+    name: rabbitmq-guest-secret
+
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Permission
+metadata:
+  name: rabbitmq-guest-permission
+  namespace: parel25
+spec:
+  vhost: 'rabbitmq-vhost'
+  userReference: 
+    name: rabbitmq-guest-user
+  permissions:
+    write: ".*"
+    configure: ".*"
+    read: ".*"
+  rabbitmqClusterReference:
+    name: rabbitmq

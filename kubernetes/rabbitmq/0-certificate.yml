@@ -1,0 +1,26 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rabbitmq-certificate
+  namespace: parel25
+spec:
+  secretName: rabbitmq-certificate
+  duration: 2160h
+  renewBefore: 360h
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  commonName: "rabbitmq.parel25.nl"
+  dnsNames:
+    - "rabbitmq.parel25.nl"
+    - "rabbitmq.parel25.svc.cluster.local"
+    - "localhost"
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
