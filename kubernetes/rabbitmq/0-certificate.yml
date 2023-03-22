@@ -15,10 +15,12 @@ spec:
     - digital signature
     - key encipherment
     - server auth
+    - client auth
   commonName: "rabbitmq.parel25.nl"
   dnsNames:
     - "rabbitmq.parel25.nl"
     - "rabbitmq.parel25.svc.cluster.local"
+    - "*.rabbitmq-nodes.parel25.svc.cluster.local"
     - "localhost"
   issuerRef:
     name: ca-issuer

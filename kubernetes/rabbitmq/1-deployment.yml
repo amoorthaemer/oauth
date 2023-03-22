@@ -9,6 +9,8 @@ spec:
   replicas: 2
   # tls:
   #   secretName: rabbitmq-certificate
+  #   caSecretName: rabbitmq-certificate
+  #   disableNonTLSListeners: false
   image: rabbitmq:latest
   service:
     type: ClusterIP
@@ -27,6 +29,7 @@ spec:
       - rabbitmq_management
       - rabbitmq_peer_discovery_k8s
     additionalConfig: |
+      # log.default.level = debug
       cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
       cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
       cluster_formation.k8s.address_type = hostname
@@ -34,4 +37,6 @@ spec:
       cluster_formation.node_cleanup.interval = 10
       cluster_partition_handling = autoheal
       queue_master_locator = min-masters
+      # ssl_options.fail_if_no_peer_cert = false
+      # ssl_options.depth  = 2
     advancedConfig: ""
