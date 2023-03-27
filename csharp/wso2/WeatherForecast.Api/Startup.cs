@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.WsFederation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
@@ -129,6 +130,14 @@ internal class Startup {
 		})
 		// API-KEY
 		.AddApiKeyInHeader<ApiKeyProvider>(ApiKeyDefaults.AuthenticationScheme)
+		// WS-Federation
+		.AddCookie()
+		.AddWsFederation(WsFederationDefaults.AuthenticationScheme, options => {
+			options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+			options.Wtrealm = "api://221b41c5-fc29-431e-b3fe-4dbb838c5bba";
+			options.MetadataAddress = "https://login.microsoftonline.com/a4a8edd7-6215-46f9-a1b0-e267e20c88c6/federationmetadata/2007-06/federationmetadata.xml";
+		})
 		// CERTIFICATE
 		.AddCertificate(CertificateAuthenticationDefaults.AuthenticationScheme, options => {
 			options.RevocationMode = X509RevocationMode.NoCheck;
@@ -186,22 +195,14 @@ internal class Startup {
 					return ApiKeyDefaults.AuthenticationScheme;
 				}
 
+				//return WsFederationDefaults.AuthenticationScheme;
 				return CertificateAuthenticationDefaults.AuthenticationScheme;
 			};
 		});
 
 		services
 			.AddOpenPolicyAgent()
-			.AddAuthorization(options => {
-				//options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, GetPolicy(JwtBearerDefaults.AuthenticationScheme));
-				//options.AddPolicy(ApiKeyDefaults.AuthenticationScheme, GetPolicy(ApiKeyDefaults.AuthenticationScheme));
-				//options.AddPolicy(CertificateAuthenticationDefaults.AuthenticationScheme, GetPolicy(CertificateAuthenticationDefaults.AuthenticationScheme));
-
-				//AuthorizationPolicy GetPolicy(params string[] schemes) =>
-				//	new AuthorizationPolicyBuilder(schemes)
-				//		.RequireAuthenticatedUser()
-				//		.Build();
-			});
+			.AddAuthorization();
 
 		services.AddCors(options => {
 			options.AddDefaultPolicy(policyBuilder => {
